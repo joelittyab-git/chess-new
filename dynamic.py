@@ -46,6 +46,21 @@ class PieceManager:
               panel (_wx.Panel_): the panel where the board is present
           """
           
+          # test
+          
+          self.fen = [
+               [".",".",".",".",".",".",".","."],
+               [".",".",".",".",".",".",".","."],
+               [".",".",".",".",".",".",".","."],
+               [".",".",".",".",".",".",".","."],
+               [".",".",".",".",".",".",".","."],
+               [".",".",".",".",".",".",".","."],
+               ["P",".",".",".",".",".",".","."],
+               [".",".",".",".",".",".",".","."]
+          ]
+          
+          # ---
+          
           self.whites_move = True
           
           self.centers = centers
@@ -90,9 +105,14 @@ class PieceManager:
           
           self.ChessBoard = MoveGen.IB_ChessPy()
           # default chess starting position is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 in FEN notation
-          self.ChessBoard.setCustomBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+          # self.ChessBoard.setCustomBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+          self.ChessBoard.setCustomBoard("8/P7/8/8/8/8/8/8 w - - 0 1")
+          self.fen = self.ChessBoard.board
 
           self.moveDict, self.inCheck = self.ChessBoard.getLegalMoves(whiteToMove=self.whites_move)
+          
+          self.input_locked = False
+
 
      
           
@@ -184,6 +204,9 @@ class PieceManager:
           
 
      def on_click(self, event:Event):
+          
+          if self.input_locked:
+               return
           """Handles any click event on the board
 
           Args:
@@ -245,22 +268,52 @@ class PieceManager:
           
           is_queenside_castle, is_kingside_castle  = PieceManager.detect_castling(from_pos, to_pos, piece)
           is_en_passant = PieceManager.detect_en_passant(from_pos, to_pos, piece, self.fen)
-          if PieceManager.detect_promotion(to_pos, piece):
-               dlg = PromotionDialog(
-                    self.board_panel,
-                    is_white=piece.isupper(),
-                    piece_bitmaps=self.loaded_svg
-               )
+          # if PieceManager.detect_promotion(to_pos, piece):
+          #      dlg = PromotionDialog(
+          #           self.board_panel,
+          #           is_white=piece.isupper(),
+          #           piece_bitmaps=self.loaded_svg
+          #      )
 
-               if dlg.ShowModal() == wx.ID_OK:
-                    promote_to = dlg.selection
-               else:
-                    return  # promotion cancelled
+          #      if dlg.ShowModal() == wx.ID_OK:
+          #           promote_to = dlg.selection
+          #      else:
+          #           return  # promotion cancelled
 
-               dlg.Destroy()
+          #      dlg.Destroy()
           
           
           # self.ChessBoard.MakeMove(self.whites_move, from_index, )
+          
+          if PieceManager.detect_promotion(to_pos, piece):
+               self.input_locked = True
+
+               choices = ["Queen", "Rook", "Bishop", "Knight"]
+
+               dlg = wx.SingleChoiceDialog(
+                    self.board_panel,
+                    "Choose promotion piece",
+                    "Promotion",
+                    choices
+               )
+
+               if dlg.ShowModal() == wx.ID_OK:
+                    choice = dlg.GetStringSelection()
+                    promote_map = {
+                         "Queen": "Q",
+                         "Rook": "R",
+                         "Bishop": "B",
+                         "Knight": "N"
+                    }
+                    promote = promote_map[choice]
+                    print(promote)
+               else:
+                    dlg.Destroy()
+                    self.input_locked = False
+                    return
+
+               dlg.Destroy()
+               self.input_locked = False
           
      def detect_castling(from_sq, to_sq, piece):
           is_qs = False
