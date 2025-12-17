@@ -144,7 +144,7 @@ class PieceManager:
                          True
                          )
 
-     def highlight(self, point, dc):
+     def highlight(self, point, dc:BufferedPaintDC):
           dc.SetBrush(wx.Brush(Colour(self.highlight_colour)))
           dc.DrawCircle(int(point[0]) + 15, int(point[1]) + 15, 10)
 
@@ -287,20 +287,3 @@ class PieceManager:
 
      def destroy_all(self):
           self.board_panel.GetParent().GetParent().Destroy()
-     # =========================
-     # App bootstrap
-     # =========================
-
-     # class ChessFrame(wx.Frame):
-     #     def __init__(self):
-     #         super().__init__(None, title="Chess", size=(520, 560))
-     #         panel = wx.Panel(self)
-     #         panel.SetSize((480, 480))
-     #         PieceManager(generate_chess_centers(), panel)
-     #         self.Show()
-
-
-     # if __name__ == "__main__":
-     #     app = wx.App(False)
-     #     ChessFrame()
-     #     app.MainLoop()
