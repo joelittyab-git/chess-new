@@ -36,7 +36,7 @@ class PieceManager:
           ["R","N","B","Q","K","B","N","R"],
      ]
      
-     def __init__(self, centers, panel:Panel,captured_panel_white:Panel,captured_panel_black:Panel, callback=None, generate_moves=None):
+     def __init__(self, centers, panel:Panel,captured_panel_white:Panel,captured_panel_black:Panel, callback=None, generate_moves=None, colour=False):
           """_summary_
 
           Args:
@@ -107,8 +107,8 @@ class PieceManager:
           
           self.ChessBoard = MoveGen.IB_ChessPy()
           # default chess starting position is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 in FEN notation
-          # self.ChessBoard.setCustomBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-          self.ChessBoard.setCustomBoard("8/P7/8/8/8/8/8/8 w - - 0 1")
+          self.ChessBoard.setCustomBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+          # self.ChessBoard.setCustomBoard("8/P7/8/8/8/8/8/8 w - - 0 1")
           self.fen = self.ChessBoard.board
 
           self.moveDict, self.inCheck = self.ChessBoard.getLegalMoves(whiteToMove=self.whites_move)
@@ -119,7 +119,7 @@ class PieceManager:
           self.captured_panel_black = captured_panel_black
           
           self.captured_white = ['r','k','q']
-          self.captured_black = ['B','N']
+          self.captured_black = ['B','N', 'N']
           
           self.captured_panel_black.Bind(wx.EVT_PAINT, self.paint_captured_black)
           self.captured_panel_white.Bind(wx.EVT_PAINT, self.paint_captured_white)
@@ -274,10 +274,18 @@ class PieceManager:
           
           # Handles all the click on the existing pieces on the board
           if self.fen[b][a]!='.':
-               self.selected_square = (b,a)
-               self.show_all_possible_moves((a,b))
+               
+               if self.whites_move and self.fen[b][a].isupper():
+                    self.selected_square = (b,a)
+                    self.show_all_possible_moves((a,b))
+                    
+               if not self.whites_move and self.fen[b][a].islower():
+                    self.selected_square = (b,a)
+                    self.show_all_possible_moves((a,b))
                
           print(f"BOX: {a} {b}")
+          
+          
           
      def move(self, selected_square, clicked_sqaure):
           """Moves the piece from selected square to the clicked sqaure in the fen list

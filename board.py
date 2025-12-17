@@ -8,7 +8,9 @@ SQUAREPIX=60
 BOARDPIX=BOARDSIZE * SQUAREPIX
 
 app=wx.App(False)
-frame=wx.Frame(None,title="Chessboard",size=(BOARDPIX+20,BOARDPIX+80))
+frame=wx.Frame(None,title="Chessboard",size=(BOARDPIX+20,BOARDPIX+240))
+frame.SetMinClientSize((BOARDPIX+20,BOARDPIX+240))
+frame.SetMaxClientSize((BOARDPIX+20,BOARDPIX+240))
 # panel=wx.Panel(frame)
   
 
