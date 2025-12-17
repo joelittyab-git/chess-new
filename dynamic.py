@@ -98,10 +98,12 @@ class PieceManager:
           
           panel.Bind(EVT_PAINT, self.init_paint)
           panel.Bind(EVT_LEFT_DOWN, self.on_click)
-
-          button = wx.Button(self.board_panel,label="Black and white <-> Blue and white", pos=(250, 500))
-          button.Bind(wx.EVT_BUTTON,self.toggle_color)
           
+          # TODO: Colour chnage 
+
+          """          button = wx.Button(self.board_panel,label="Black and white <-> Blue and white", pos=(250, 500))
+                    button.Bind(wx.EVT_BUTTON,self.toggle_color)
+          """          
           
           self.ChessBoard = MoveGen.IB_ChessPy()
           # default chess starting position is rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1 in FEN notation

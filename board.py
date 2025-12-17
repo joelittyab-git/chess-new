@@ -60,14 +60,13 @@ for row in range(BOARDSIZE):
 container = wx.Panel(frame)
 
 main_sizer = wx.BoxSizer(wx.VERTICAL)
-board_sizer = wx.BoxSizer(wx.VERTICAL)
 
 # Top: captured black
 captured_black_panel = wx.Panel(container, size=(-1, 80))
 captured_black_panel.SetBackgroundColour("#eeeeee")
 
 # Middle: board
-board_panel = wx.Panel(container, size=(520, 520))
+board_panel = wx.Panel(container, size=(480, 480))
 board_panel.SetBackgroundColour("white")
 
 # Bottom: captured white
