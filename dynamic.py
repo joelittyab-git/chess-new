@@ -36,7 +36,7 @@ class PieceManager:
           ["R","N","B","Q","K","B","N","R"],
      ]
      
-     def __init__(self, centers, panel:Panel, callback=None, generate_moves=None):
+     def __init__(self, centers, panel:Panel,captured_panel_white:Panel,captured_panel_black:Panel, callback=None, generate_moves=None):
           """_summary_
 
           Args:
@@ -85,9 +85,9 @@ class PieceManager:
           # The index of the box selected using the fen
           self.selected_square = None
           
-          # Captured pins
-          self.captured_black = list()
-          self.captured_white = list()
+          # # Captured pins
+          # self.captured_black = list()
+          # self.captured_white = list()
           
           if centers is None:
                self.centers = generate_chess_centers()
@@ -99,7 +99,7 @@ class PieceManager:
           panel.Bind(EVT_PAINT, self.init_paint)
           panel.Bind(EVT_LEFT_DOWN, self.on_click)
 
-          button = wx.Button(panel,label="Black and white <-> Blue and white", pos=(120, 500))
+          button = wx.Button(self.board_panel,label="Black and white <-> Blue and white", pos=(250, 500))
           button.Bind(wx.EVT_BUTTON,self.toggle_color)
           
           
@@ -112,6 +112,15 @@ class PieceManager:
           self.moveDict, self.inCheck = self.ChessBoard.getLegalMoves(whiteToMove=self.whites_move)
           
           self.input_locked = False
+          
+          self.captured_panel_white = captured_panel_white
+          self.captured_panel_black = captured_panel_black
+          
+          self.captured_white = ['r','k','q']
+          self.captured_black = ['B','N']
+          
+          self.captured_panel_black.Bind(wx.EVT_PAINT, self.paint_captured_black)
+          self.captured_panel_white.Bind(wx.EVT_PAINT, self.paint_captured_white)
 
 
      
@@ -138,6 +147,32 @@ class PieceManager:
                     dc.SetPen(wx.Pen(color))
                     dc.DrawRectangle(x, y, self.SQAUREPIX, self.SQAUREPIX)
                     
+     def paint_captured_white(self, event):
+          dc = wx.BufferedPaintDC(self.captured_panel_white)
+          dc.Clear()
+
+          size = 32
+          padding = 4
+
+          for i, piece in enumerate(self.captured_white):
+               bmp = self.loaded_svg[piece]
+               x = (i % 4) * (size + padding)
+               y = (i // 4) * (size + padding)
+               dc.DrawBitmap(bmp, x, y, True)
+               
+     def paint_captured_black(self, event):
+          dc = wx.BufferedPaintDC(self.captured_panel_black)
+          dc.Clear()
+
+          size = 32
+          padding = 4
+
+          for i, piece in enumerate(self.captured_black):
+               bmp = self.loaded_svg[piece]
+               x = (i % 4) * (size + padding)
+               y = (i // 4) * (size + padding)
+               dc.DrawBitmap(bmp, x, y, True)
+                    
      def toggle_color(self, event):
           self.blueblack = not self.blueblack
           self.board_panel.Refresh()
@@ -161,7 +196,7 @@ class PieceManager:
                for j in range(len(self.fen[i])):
                     if self.fen[i][j]!='.':
                          x,y  = c[i][j]
-                         bmp = self.loaded_svg[PieceManager.START_BOARD[i][j]]
+                         bmp = self.loaded_svg[self.fen[i][j]]
                          # TODO: Store all the bmp in a dictionary of their positions
                          self.piece_config[(x,y)]=bmp
                          dc.DrawBitmap(bmp,round(x),round(y) )
@@ -249,7 +284,8 @@ class PieceManager:
               selected_square (_tuple_): The selected square in the form (row_index, column_index)
               clicked_sqaure (_tuple_): The square to which the player desires to move. (row_index, column_index)
           """
-          
+          print(*self.fen)
+
           # if self.fen[clicked_sqaure[0]][clicked_sqaure[1]]=='.':
           #      # Swaps he notations on the board
           #      self.fen[clicked_sqaure[0]][clicked_sqaure[1]] = self.fen[selected_square[0]][selected_square[1]]
@@ -289,7 +325,12 @@ class PieceManager:
                self.input_locked = True
 
                choices = ["Queen", "Rook", "Bishop", "Knight"]
-
+               print(selected_square)
+               print(*self.fen)
+               print(self.fen[selected_square[0]][selected_square[1]])
+                
+               piece_map = str.lower if self.fen[selected_square[0]][selected_square[1]].islower() else str.upper
+               print(piece_map("A"))
                dlg = wx.SingleChoiceDialog(
                     self.board_panel,
                     "Choose promotion piece",
@@ -305,8 +346,8 @@ class PieceManager:
                          "Bishop": "B",
                          "Knight": "N"
                     }
-                    promote = promote_map[choice]
-                    print(promote)
+                    promote =  piece_map(promote_map[choice])
+                    print("Promotion: ",promote)
                else:
                     dlg.Destroy()
                     self.input_locked = False

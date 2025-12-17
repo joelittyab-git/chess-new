@@ -9,7 +9,7 @@ BOARDPIX=BOARDSIZE * SQUAREPIX
 
 app=wx.App(False)
 frame=wx.Frame(None,title="Chessboard",size=(BOARDPIX+20,BOARDPIX+80))
-panel=wx.Panel(frame)
+# panel=wx.Panel(frame)
   
 
 board = [
@@ -57,11 +57,47 @@ for row in range(BOARDSIZE):
 # button.Bind(wx.EVT_BUTTON,toggle_color)
 
 
+container = wx.Panel(frame)
+
+main_sizer = wx.BoxSizer(wx.VERTICAL)
+board_sizer = wx.BoxSizer(wx.VERTICAL)
+
+# Top: captured black
+captured_black_panel = wx.Panel(container, size=(-1, 80))
+captured_black_panel.SetBackgroundColour("#eeeeee")
+
+# Middle: board
+board_panel = wx.Panel(container, size=(520, 520))
+board_panel.SetBackgroundColour("white")
+
+# Bottom: captured white
+captured_white_panel = wx.Panel(container, size=(-1, 80))
+captured_white_panel.SetBackgroundColour("#eeeeee")
+
+main_sizer.Add(captured_black_panel, 0, wx.EXPAND | wx.ALL, 5)
+main_sizer.Add(board_panel, 0)
+main_sizer.Add(captured_white_panel, 0, wx.EXPAND | wx.ALL, 5)
+
+container.SetSizer(main_sizer)
+
+manager = PieceManager(centers, board_panel,captured_white_panel, captured_black_panel)
 
 
+# container = wx.Panel(frame)
+
+# board_panel = wx.Panel(container, size=(480, 480))
+# captured_panel = wx.Panel(container, size=(200, 480))
+
+# sizer = wx.BoxSizer(wx.HORIZONTAL)
+# sizer.Add(board_panel, 0)
+# sizer.Add(captured_panel, 0, wx.LEFT, 5)
+
+# container.SetSizer(sizer)
+
+# manager = PieceManager(centers, board_panel,captured_panel)
 
 
-t = PieceManager(centers, panel, None)
+# t = PieceManager(centers, panel, None)
 
 
 frame.Show()
