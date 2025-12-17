@@ -203,10 +203,11 @@ class PieceManager:
 
         moves = moveDict.get(engine_pos, set())
 
-        message = "Black won" if self.whites_move else "White Won"
-        if len(moves)==0:
-            db = wx.MessageDialog(self.board_panel, message,"End Game")
-            print("Game Over")
+        # message = "Black won" if self.whites_move else "White Won"
+        # if len(moves)==0:
+        #     db = wx.MessageDialog(self.board_panel, message,"End Game")
+        #     db.ShowModal()
+        #     print("Game Over")
             
             
         
@@ -268,6 +269,17 @@ class PieceManager:
         self.highlight_points.clear()
 
         self.board_panel.Refresh()
+        
+        message = "Black won" if self.whites_move else "White Won"
+        print(len(self.ChessBoard.getLegalMoves(self.whites_move)[0]))
+        for i,k in self.ChessBoard.getLegalMoves(self.whites_move)[0].items():
+            print(i,k)
+        if  len(self.ChessBoard.getLegalMoves(self.whites_move)[0])==0:
+            db = wx.MessageDialog(self.board_panel, message,"End Game")
+            db.ShowModal()
+            self.destroy_all()
+    def destroy_all(self):
+        self.board_panel.GetParent().GetParent().Destroy()
 
 
 # =========================
