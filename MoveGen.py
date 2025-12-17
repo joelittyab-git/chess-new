@@ -732,14 +732,6 @@ class IB_ChessPy:
         
 
         return moveDict, inCheck
-        
-
-
-        
-
-        
-    
-
 
 
     def MakeMove(self, isWhiteMove: bool, fromPos: tuple, toPos: tuple, isCastleKingSide: bool, isCastleQueenSide: bool, isEnPassant: bool, Promote = None):
