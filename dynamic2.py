@@ -5,7 +5,7 @@ from wx import (
 )
 
 from wx.svg import SVGimage
-from wx import IMAGE_QUALITY_HIGH, EVT_PAINT, EVT_LEFT_DOWN
+from wx import IMAGE_QUALITY_HIGH, EVT_PAINT, EVT_LEFT_DOWN, EVT_CLOSE
 
 import MoveGen
 from unit import Unit
@@ -14,10 +14,6 @@ from unit import Unit
 BLUEBLACK = True
 SQAUREPIX = 60
 
-
-# =========================
-# Utility functions
-# =========================
 
 def rasterize_svg(svg: SVGimage, target_size):
     """Converts the image to a smaller size by first converting it into an image instance 
@@ -29,22 +25,6 @@ def rasterize_svg(svg: SVGimage, target_size):
     img = img.Scale(tw, th, IMAGE_QUALITY_HIGH)
     return Bitmap(img)
 
-
-# def generate_chess_centers(square_size=SQAUREPIX):
-#     board = []
-#     for row in range(8):
-#         row_centers = []
-#         for col in range(8):
-#             center_x = col * square_size
-#             center_y = row * square_size
-#             row_centers.append((center_x, center_y))
-#         board.append(row_centers)
-#     return board
-
-
-# =========================
-# PieceManager (UI Layer)
-# =========================
 
 class PieceManager:
 
@@ -76,6 +56,8 @@ class PieceManager:
 
         panel.Bind(EVT_PAINT, self.init_paint)
         panel.Bind(EVT_LEFT_DOWN, self.on_click)
+        panel.Bind(EVT_CLOSE, self.on_close)
+        
         
         self.white_captured = list()
         self.black_captured = list()
@@ -86,7 +68,9 @@ class PieceManager:
         self.colour = ('white','black') if not colour else ("#f0f0f0",'#4287f5')
         self.highlight_colour = '#494eeb' if colour else '#f5473b'
         
-        
+    def on_close(self):
+        if self.whites_move:
+            pass
     
     def display_captured_white(self, event):
         dc = BufferedPaintDC(self.white_captured_panel)
@@ -126,11 +110,9 @@ class PieceManager:
     def engine_to_ui(self, x, y):
         return 7 - y, x
 
-    # =====================
-    # Rendering
-    # =====================
-
     def preload_svg(self):
+        """Preloads the svg to save time when drawing the board
+        """
         svgs = Unit.load_all()
         for k, v in svgs.items():
             self.loaded_svg[k] = rasterize_svg(v, (60, 60))
@@ -147,6 +129,7 @@ class PieceManager:
                 dc.DrawRectangle(x,y,SQAUREPIX,SQAUREPIX)
 
     def configure_pieces(self, dc: BufferedPaintDC):
+        """Sets pieces on the board"""
         for r in range(8):
             for c in range(8):
                 piece = self.fen[r][c]
@@ -178,7 +161,6 @@ class PieceManager:
         self.white_captured_panel.Refresh()
 
 
-
     def on_click(self, event: Event):
         """Handles all clicks on the board"""
         if self.input_locked:
@@ -198,6 +180,9 @@ class PieceManager:
 
         piece = self.fen[row][col]
         if piece == '.':
+            self.legal_moves.clear()
+            self.highlight_points.clear()
+            self.board_panel.Refresh()
             return
 
         if self.whites_move and piece.isupper():
@@ -218,6 +203,13 @@ class PieceManager:
 
         moves = moveDict.get(engine_pos, set())
 
+        message = "Black won" if self.whites_move else "White Won"
+        if len(moves)==0:
+            db = wx.MessageDialog(self.board_panel, message,"End Game")
+            print("Game Over")
+            
+            
+        
         self.legal_moves = [
             self.engine_to_ui(x, y) for (x, y) in moves
         ]
