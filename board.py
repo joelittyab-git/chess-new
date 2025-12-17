@@ -1,4 +1,4 @@
-from dynamic import PieceManager
+from dynamic2 import PieceManager
 
 import MoveGen
 
@@ -81,7 +81,9 @@ main_sizer.Add(captured_white_panel, 0, wx.EXPAND | wx.ALL, 5)
 
 container.SetSizer(main_sizer)
 
-manager = PieceManager(centers, board_panel,captured_white_panel, captured_black_panel)
+# manager = PieceManager(centers, board_panel)
+manager = PieceManager(centers,board_panel, captured_white_panel, captured_black_panel)
+
 
 
 # container = wx.Panel(frame)
