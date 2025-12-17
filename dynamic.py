@@ -56,7 +56,7 @@ class PieceManager:
                [".",".",".",".",".",".",".","."],
                [".",".",".",".",".",".",".","."],
                [".",".",".",".",".",".",".","."],
-               [".",".",".",".",".",".",".","."],
+               [".",".",".",".",".",".",".","."], 
                ["P",".",".",".",".",".",".","."],
                [".",".",".",".",".",".",".","."]
           ]
@@ -253,7 +253,6 @@ class PieceManager:
           """
           t = event.GetEventObject()
           p = event.GetPosition()
-          print(f"Clicked at {t} {p}")
           
           """
           a = (p[0]+32)//64
@@ -428,21 +427,38 @@ class PieceManager:
           moves = [
                (position[0], position[1]-1)
           ]
-
-          move = self.centers[position[1]-1][position[0]]
-          move2 = self.centers[position[1]-1][position[0]+1]
-          self.highlight_points.extend([move,move2])
-          print(self.highlight_points)
+          print(self.centers)
+          # move = self.centers[position[1]-1][position[0]]
+          # move2 = self.centers[position[1]-1][position[0]+1]
+          # self.highlight_points.extend([move,move2])
+          # print(self.highlight_points)
           # TODO: get all valid moves and mark them
+          self.ChessBoard.board = self.fen
+          print(*self.ChessBoard.board)
           
+          moves = self.ChessBoard.getLegalMoves(self.whites_move)
+          print("Move me: ",moves[0])
+          print("Original: ", position[0],position[1])
+          converted_position = PieceManager.Converter(position[0],position[1])[1],PieceManager.Converter(position[0],position[1])[0]
+          print("pipipopo:",converted_position)
+          all_moves  = moves[0]
+          specicfic_moves = all_moves.get(converted_position, [])
+          converted_legal_moves = list(map(lambda a: PieceManager.Converter(a[0],a[1]), specicfic_moves))
+          highlight_points = list(map(lambda a:self.centers[a[0]][a[1]], converted_legal_moves))
+          self.highlight_points.extend(highlight_points)
+          print("Converted Legal moves: ", converted_legal_moves)
+          print(all)
+          print("Converted: ",converted_position)
           
+          print("Thats all")
           
           
           l_m = [(position[1]-1, position[0]), (position[1]-1, position[0]+1)]
           print(l_m)
-          self.legal_moves.extend(l_m)
+          self.legal_moves.extend(converted_legal_moves)
           print(self.legal_moves)
           self.board_panel.Refresh()
+          
 
 def rasterize_svg(svg: SVGimage, target_size):
     """
