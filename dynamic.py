@@ -20,7 +20,7 @@ from unit import Unit
 import wx
 
 
-BLUEBLACK = False
+BLUEBLACK = True
 SQAUREPIX = 60
 
 class PieceManager:
@@ -45,6 +45,8 @@ class PieceManager:
               generate_moves (_any_): Generate the set of moves for a particular pice on the board
               panel (_wx.Panel_): the panel where the board is present
           """
+          
+          self.colour = colour
           
           # test
           
@@ -143,9 +145,9 @@ class PieceManager:
                     if (row + col) % 2 == 0:
                          dc.SetBrush(wx.Brush("white"))
                     else:
-                         color = "#2278a3" if self.blueblack else "black"
+                         color = "#2278a3" if self.colour else "black"
                          dc.SetBrush(wx.Brush(color))
-                    color = "#2278a3" if blublack else "black"
+                    color = "#2278a3" if self.colour else "black"
                     dc.SetPen(wx.Pen(color))
                     dc.DrawRectangle(x, y, self.SQAUREPIX, self.SQAUREPIX)
                     
